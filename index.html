@@ -1,0 +1,162 @@
+<html>
+<head>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<style>
+
+*{font-family : "roboto condensed" ; }
+mark{background-color : #0085b6 ;color : #ffffff ; padding : 2px 10px 2px 10px ; border : 1px ; border-radius : 5px}
+.out_page{text-align : center ;display:flex;justify-content:center;width:100%;}
+.page{width:210px;display:flex;overflow:hidden;}
+.page .pageBox{display:flex;}
+.out_page a { height:max-content;color: black ; float: left ; padding: 5px 13px ; text-decoration: none ; border: 
+ 1px solid #ddd ; width:35px;box-sizing:border-box;}
+.out_page a.active { background-color : #0085b6 ; color : white ; border: 1px solid #0085b6; }
+.out_page a:hover {background-color: #ddd; text-decoration : none ; color : black }
+.out_page a:first-child { border-top-left-radius: 5px ; border-bottom-left-radius: 5px; }
+.out_page a:last-child {border-top-right-radius: 5px ; border-bottom-right-radius: 5px;}
+a:link{color : black;text-decoration : none; }
+a:hover{color : blue;text-decoration : underline; }
+.grid_box{display:flex;justify-content:space-around;flex-wrap:wrap;}
+.grid_ele{padding : 0px 10px 15px 20px ; border : 1px solid black; text-align : left ;width:45%;margin-bottom:30px;}
+.grid_ele h2 {color : #0085b6;}
+
+</style>
+</head>
+<body style="margin : 40px 40px 60px 40px">
+
+	<img id="profile" src = "https://avatars.githubusercontent.com/u/583231?v=4" alt="@johndoe" style="width:
+	215px ; height:215px ; border-radius:215px ; float:left ; margin : 0px 60px 0px 20px ;"><br>
+	<h1 id="name" style = "font-family : roboto condensed ; margin-bottom : 15px ; margin-top : 0px  ">John Doe
+	</h1>
+	<p id="bio" style = "margin-bottom : 15px ;">Bio goes here</p>
+	<p style = "margin :15px 0px;"><i class="material-icons" style = "float :left">place</i>&ensp;<span 
+	id="location">Location</span></p>
+	<p style=" margin : 15px">Twitter UserName : <span id="user"> twitter</span></p><br><br>
+	<div class = "acc_link" style ="margin : 15px">
+		<p> <i class="material-icons" style="float : left">link</i>
+		    <a href="url">&ensp;<span id="url">https://github.com/john_doe</span> </a>
+		</p>
+	</div>
+	<div class = "grid_box">
+		<div class="grid_ele">
+			<h2>Project</h2>
+			<p>Description about the project done</p>
+			<mark>Language</mark>
+		</div>
+		<div class="grid_ele"><h2>Project</h2>
+			<p>Description about the project done</p>
+			<mark>Language</mark>
+		</div>
+		<div class="grid_ele"><h2>Project</h2>
+			<p>Description about the project done</p>
+			<mark>Language</mark>
+		</div>
+		<div class="grid_ele"><h2>Project</h2>
+			<p>Description about the project done</p>
+			<mark>Language</mark>
+		</div>
+		<div class="grid_ele"><h2>Project</h2>
+			<p>Description about the project done</p>
+			<mark>Language</mark>
+			<mark>JavaScript</mark>
+		</div>
+		<div class="grid_ele"><h2>Project</h2>
+			<p>Description about the project done</p>
+			<mark>Language</mark>
+		</div>
+	</div>
+	
+	<div class = "out_page">
+		<a onclick="l_shift()">&laquo;</a>	
+		<div class = "page">
+		</div>
+		<a onclick="r_shift()">&raquo;</a>		
+	</div>
+	<div class = "box button_older">
+		<button style = "color : #808080 ; float : left ;background-color : white ; border-radius : 20px ; 
+		border : 1px solid #808080 ; padding : 5px 20px 5px 20px" >&larr;Older</button></div>
+	<div class = "box button_newer">
+		<button style = "color : #0085b6 ; float : right ;background-color : white ; border-radius : 20px ; 
+		border : 1px solid #808080 ; padding : 5px 20px 5px 20px" >Newer&rarr;</button></div>
+</body>
+	<script>
+		window.onload=load;
+		var info={};		
+		var length;		
+		var movement=0;
+		var count=0;
+		function display_Repository(pos){
+			var page_no=parseInt(pos);
+			console.log(page_no,info[page_no],info);
+			document.querySelector(".grid_box").innerHTML=info[page_no-1];
+		}
+		async function load(){
+			var user=await window.prompt("Enter Username : ");
+			var retun_value=await fetch("https://api.github.com/users/"+user);
+			var result=await retun_value.json();
+			console.log(result);
+			document.getElementById("profile").src=result["avatar_url"];
+			document.getElementById("bio").innerHTML=result["bio"];			
+			document.getElementById("location").innerHTML=result["location"];            		 
+			document.getElementById("name").innerHTML=result["name"];			
+			document.getElementById("url").innerHTML=result["html_url"];
+			document.getElementById("user").innerHTML=result["twitter_username"];	
+																		
+			var retun_value=await fetch("https://api.github.com/users/"+user+"/repos");
+			var result=await retun_value.json();
+			length=Math.ceil(result.length/10);
+			var displayHtml="";
+			console.log(result);
+			result.map((k,pos)=>{
+				var tempData=`<div class="grid_ele"><h2>${k['name']}</h2>`;
+				if(k["description"]==null) 	tempData+=`<p></p>`;
+				else tempData+=`<p>${k['description']}</p>`;				
+				if(k["language"]==null) tempData+="</div>";
+				else tempData+=`<mark>${k['language']}</mark></div>`;	
+				
+				var key=Math.floor(pos/10);
+				console.log(key);
+				if(info[key]!=undefined){
+					info[key]+=tempData;
+				}
+				else{
+					info[key]=tempData;
+				}
+				console.log(info[key]);
+			})
+			console.log(info);
+			page();
+			display_Repository(1);
+		}
+		function l_shift(){
+			if(-count<length-6){
+				movement-=35;
+				count-=1;
+			document.querySelector(".out_page .page .pageBox").style.marginLeft=movement.toString()
+			+"px"; }		
+		}
+		function r_shift(){
+			if(count<0){		
+				count+=1;
+				movement+=35;
+			document.querySelector(".out_page .page .pageBox").style.marginLeft=movement.toString()
+			+"px"; }		
+		}
+		function page(){
+			var i=1;
+			var links="<div class='pageBox'>";
+			for(i;i<=length;i++)
+				links+=`<a onclick='display_Repository(${i})'>${i}</a>`;
+			document.querySelector(".out_page .page").innerHTML=links+"</div>";
+		}
+		
+	</script>
+</html>
+
+
+
+
+
+
+
+
